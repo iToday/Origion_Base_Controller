@@ -13,6 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 ***********************************************************************/
+
 #include <string.h>
 #include <stdio.h>
 #include "Main.h"
@@ -23,67 +24,125 @@ limitations under the License.
 #include "DIO.h"
 #include "adc.h"
 
+#include "FreeRTOS.h"
+#include "task.h"
+#include "queue.h"
+#include "misc.h"
+
+void _system_init(void);
+//Task priority    //任务优先级
+#define START_TASK_PRIO	4
+#define LED_TASK_PRIO 4
+#define BUZZER_TASK_PRIO1 3
+#define RECEIVE_HANDLE_TASK_PRIO 6
+
+//Task stack size //任务堆栈大小	
+#define START_STK_SIZE 	128  
+#define LED_STK_SIZE   64
+#define BUZZER_STK_SIZE   64
+
+//Task handle     //任务句柄
+TaskHandle_t StartTask_Handler;
+
+//Task function   //任务函数
+void start_task(void *pvParameters);
+void led_task(void *pvParameters);
+void buzzer_task(void *pvParameters);
+void uart_task(void *pvParameters);
+void receive_handle_task(void *pvParameters);
+
+//Main function //主函数
 int main(void)
 {
-  // 设置时钟频率
-  SysTick_init(72, 10);
-  // 初始化串口3，用于读取陀螺仪数据
-  UART3_Init(9600);
-  // 初始化串口1，用于和主机通信
-  UART1_Init(115200);
-  // 等待陀螺仪初始化完成
-	jy901_init();
-  // 注意delay_ms(ms)中，ms必须<=1864
-  Delay_Ms(1000); Delay_Ms(1000);
-  
-  // 初始化ADC，用于读取电池电压
-  Adc_Init();
-  // 初始化GPIO，用于控制LED和蜂鸣器等
-  GPIO_Config();
-  // 初始化电机控制接口(PWM)
-  MOTOR_GPIO_Init();
-  // 设置不分频，PWM频率 72000000/3600=20khz
-  Motor_PWM_Init(MOTOR_MAX_PULSE, MOTOR_FREQ_DIVIDE);
-  // 初始化电机编码器接口
-  Encoder_Init();
-  // 初始化心跳包定时器
-  TIM1_Init();
-  // 初始化PID控制
-  PID_Init();
-  Delay_Ms(1000);
-  
-  // printf("\n\nFirmware Version: V%d.%d\n", VERSION_MAJOR, VERSION_MINOR);
-  
-  int Call_10ms = 1;
-  while (1) {
-    // 接收、解析并响应主机发送的串口指令
-    if (Is_Recv_New_Cmd()) {
+	_system_init(); //Hardware initialization //硬件初始化
+//	Delay_Ms(1000);
+	//Create the start task //创建开始任务
+	printf("0");
+	xTaskCreate((TaskFunction_t )start_task,            //Task function   //任务函数
+							(const char*    )"start_task",          //Task name       //任务名称
+							(uint16_t       )START_STK_SIZE,        //Task stack size //任务堆栈大小
+							(void*          )NULL,                  //Arguments passed to the task function //传递给任务函数的参数
+							(UBaseType_t    )START_TASK_PRIO,       //Task priority   //任务优先级
+							(TaskHandle_t*  )&StartTask_Handler);   //Task handle     //任务句柄   					
+	vTaskStartScheduler();  //Enables task scheduling //开启任务调度	
+	printf("9");
+}
+
+//Start task task function //开始任务任务函数
+void start_task(void *pvParameters)
+{
+    taskENTER_CRITICAL(); //Enter the critical area //进入临界区
+    //Create the task //创建任务
+		xTaskCreate(led_task, "led_task", 1000, NULL, 2, NULL);
+		xTaskCreate(buzzer_task, "buzzer_task", 1000, NULL, 3, NULL);
+		xTaskCreate(uart_task, "uart_task2", 1000, NULL, 4, NULL);
+    vTaskDelete(StartTask_Handler); //Delete the start task //删除开始任务
+    taskEXIT_CRITICAL();            //Exit the critical section//退出临界区
+}
+
+void led_task(void *pvParameters)
+{
+	for(;;)
+	{
+		LED_ON();
+		vTaskDelay(1000/portTICK_RATE_MS);
+		LED_OFF();
+		vTaskDelay(1000/portTICK_RATE_MS);
+	}
+}
+
+void buzzer_task(void *pvParameters)
+{	
+	for(;;)
+	{
+    Bat_Update_Power_State();
+    if (Bat_Is_Low_Power()) {
+			BUZZER_ON();
+		}
+		vTaskDelay(100/portTICK_RATE_MS);
+	}
+}
+
+static u32 sysTickCnt=0;
+u32 getSysTickCnt(void)
+{
+	if(xTaskGetSchedulerState()!=taskSCHEDULER_NOT_STARTED)	//The system is running //系统已经运行
+		return xTaskGetTickCount();
+	else
+		return sysTickCnt;
+}
+void uart_task(void *pvParameters)
+{
+	unsigned int lastWakeTime = getSysTickCnt();
+	for(;;)
+  {	
+		if (Is_Recv_New_Cmd()) {
       Parse_Cmd_Data(Get_RxBuffer(), Get_CMD_Length());
       Clear_CMD_Flag();
     }
-    
-    // 周期性上报数据给主机
-    if (Timer_Get_Count(COUNT_BEAT_ID) == 0) {
-      // 检测电池电压是否过低
-      Bat_Update_Power_State();
-      // 电压过低，蜂鸣器报警
-      if (Bat_Is_Low_Power())
-        BUZZER_ON();
+	//	vTaskDelayUntil(&lastWakeTime, 50/portTICK_RATE_MS);
+		Motion_Send_Data(); 
+		Acc_Send_Data();   
+		Gyro_Send_Data();
+		Angle_Send_Data();
+		Sensor_Send_Data();
+		vTaskDelay(100/portTICK_RATE_MS);
+	}
+}
 
-      // 上报周期：40毫秒
-      if ((Call_10ms % 4 + 1) == 1) {
-        Motion_Send_Data(); // 电机速度
-        Acc_Send_Data();    // 陀螺仪 加速度
-        Gyro_Send_Data();   // 陀螺仪 角速度
-        Angle_Send_Data();  // 陀螺仪 角度
-        Sensor_Send_Data(); // 电池电量
-      }
-      
-      Call_10ms++;
-      if (Call_10ms >= 8)
-        Call_10ms = 0;
-
-      Timer_Set_Count(COUNT_BEAT_ID, 1);
-    }
-  }
+void _system_init(void)
+{
+	SysTick_init(72, 10);
+  UART3_Init(9600);
+  UART1_Init(115200);
+  jy901_init();
+ // Delay_Ms(1000); Delay_Ms(1000);
+  Adc_Init();
+  GPIO_Config();
+  MOTOR_GPIO_Init();
+  Motor_PWM_Init(MOTOR_MAX_PULSE, MOTOR_FREQ_DIVIDE);
+  Encoder_Init();
+  TIM1_Init();
+  PID_Init();
+//	Delay_Ms(1000); 
 }

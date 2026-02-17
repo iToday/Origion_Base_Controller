@@ -1,0 +1,178 @@
+version: "4.1"
+name: stm32f1xx_gcc
+type: ARM
+deviceName: STM32F102C8
+packDir: null
+srcDirs:
+  - src
+  - hal
+  - FreeRTOS
+virtualFolder:
+  name: <virtual_root>
+  files: []
+  folders: []
+dependenceList: []
+outDir: build
+miscInfo:
+  lastBuildTime: 1608695075742
+  uid: 12a9c3124cec44b4e71d6bac98b11a8d
+targets:
+  Debug:
+    cppPreprocessAttrs:
+      defineList:
+        - USE_STDPERIPH_DRIVER
+        - STM32F10X_MD
+      incList:
+        - src
+        - lib/cmsis
+        - hal/STM32F10x_StdPeriph_Driver
+        - hal/STM32F10x_StdPeriph_Driver/inc
+        - hal/STM32F10x_StdPeriph_Driver/src
+        - src/Drive
+        - src/APP
+        - FreeRTOS/Source/include
+        - FreeRTOS
+        - FreeRTOS/Source/portable/GCC/ARM_CM3
+      libList: []
+    excludeList:
+      - hal/STM32F10x_StdPeriph_Driver/src/stm32f10x_bkp.c
+      - hal/STM32F10x_StdPeriph_Driver/src/stm32f10x_can.c
+      - hal/STM32F10x_StdPeriph_Driver/src/stm32f10x_cec.c
+      - hal/STM32F10x_StdPeriph_Driver/src/stm32f10x_crc.c
+      - hal/STM32F10x_StdPeriph_Driver/src/stm32f10x_dac.c
+      - hal/STM32F10x_StdPeriph_Driver/src/stm32f10x_dbgmcu.c
+      - hal/STM32F10x_StdPeriph_Driver/src/stm32f10x_dma.c
+      - hal/STM32F10x_StdPeriph_Driver/src/stm32f10x_flash.c
+      - hal/STM32F10x_StdPeriph_Driver/src/stm32f10x_fsmc.c
+      - hal/STM32F10x_StdPeriph_Driver/src/stm32f10x_i2c.c
+      - hal/STM32F10x_StdPeriph_Driver/src/stm32f10x_iwdg.c
+      - hal/STM32F10x_StdPeriph_Driver/src/stm32f10x_pwr.c
+      - hal/STM32F10x_StdPeriph_Driver/src/stm32f10x_rtc.c
+      - hal/STM32F10x_StdPeriph_Driver/src/stm32f10x_sdio.c
+      - hal/STM32F10x_StdPeriph_Driver/src/stm32f10x_wwdg.c
+      - FreeRTOS/Source/test
+      - FreeRTOS/Source/portable/ARMv8M
+      - FreeRTOS/Source/portable/BCC
+      - FreeRTOS/Source/portable/CCS
+      - FreeRTOS/Source/portable/CodeWarrior
+      - FreeRTOS/Source/portable/IAR
+      - FreeRTOS/Source/portable/Keil
+      - FreeRTOS/Source/portable/MPLAB
+      - FreeRTOS/Source/portable/MSVC-MingW
+      - FreeRTOS/Source/portable/MikroC
+      - FreeRTOS/Source/portable/Paradigm
+      - FreeRTOS/Source/portable/RVDS
+      - FreeRTOS/Source/portable/Renesas
+      - FreeRTOS/Source/portable/Rowley
+      - FreeRTOS/Source/portable/SDCC
+      - FreeRTOS/Source/portable/Softune
+      - FreeRTOS/Source/portable/Tasking
+      - FreeRTOS/Source/portable/MemMang/heap_1.c
+      - FreeRTOS/Source/portable/MemMang/heap_2.c
+      - FreeRTOS/Source/portable/MemMang/heap_3.c
+      - FreeRTOS/Source/portable/MemMang/heap_5.c
+      - FreeRTOS/Source/portable/GCC/ARM_CM3
+      - FreeRTOS/Source/portable/ThirdParty
+      - FreeRTOS/Source/portable/WizC
+      - FreeRTOS/Source/portable/oWatcom
+      - FreeRTOS/Source/portable/GCC/ARM7_AT91FR40008
+      - FreeRTOS/Source/portable/GCC/ARM7_AT91SAM7S
+      - FreeRTOS/Source/portable/GCC/ARM7_LPC2000
+      - FreeRTOS/Source/portable/GCC/ARM7_LPC23xx
+      - FreeRTOS/Source/portable/GCC/ARM_CA53_64_BIT
+      - FreeRTOS/Source/portable/GCC/ARM_CA9
+      - FreeRTOS/Source/portable/GCC/ARM_CM0
+      - FreeRTOS/Source/portable/GCC/ARM_CM23
+      - FreeRTOS/Source/portable/GCC/ARM_CM23_NTZ
+      - FreeRTOS/Source/portable/GCC/ARM_CM33
+      - FreeRTOS/Source/portable/GCC/ARM_CM33_NTZ
+      - FreeRTOS/Source/portable/GCC/ARM_CM3_MPU
+      - FreeRTOS/Source/portable/GCC/ARM_CM4F
+      - FreeRTOS/Source/portable/GCC/ARM_CM4_MPU
+      - FreeRTOS/Source/portable/GCC/ARM_CM7
+      - FreeRTOS/Source/portable/GCC/ARM_CR5
+      - FreeRTOS/Source/portable/GCC/ARM_CRx_No_GIC
+      - FreeRTOS/Source/portable/GCC/ATMega323
+      - FreeRTOS/Source/portable/GCC/AVR32_UC3
+      - FreeRTOS/Source/portable/GCC/CORTUS_APS3
+      - FreeRTOS/Source/portable/GCC/ColdFire_V2
+      - FreeRTOS/Source/portable/GCC/H8S2329
+      - FreeRTOS/Source/portable/GCC/HCS12
+      - FreeRTOS/Source/portable/GCC/IA32_flat
+      - FreeRTOS/Source/portable/GCC/MCF5235
+      - FreeRTOS/Source/portable/GCC/MSP430F449
+      - FreeRTOS/Source/portable/GCC/MicroBlaze
+      - FreeRTOS/Source/portable/GCC/MicroBlazeV8
+      - FreeRTOS/Source/portable/GCC/MicroBlazeV9
+      - FreeRTOS/Source/portable/GCC/NiosII
+      - FreeRTOS/Source/portable/GCC/PPC405_Xilinx
+      - FreeRTOS/Source/portable/GCC/PPC440_Xilinx
+      - FreeRTOS/Source/portable/GCC/RISC-V
+      - FreeRTOS/Source/portable/GCC/RL78
+      - FreeRTOS/Source/portable/GCC/RX100
+      - FreeRTOS/Source/portable/GCC/RX600
+      - FreeRTOS/Source/portable/GCC/RX600v2
+      - FreeRTOS/Source/portable/GCC/STR75x
+      - FreeRTOS/Source/portable/GCC/TriCore_1782
+      - FreeRTOS/Source/portable/Common
+      - FreeRTOS/Source/portable/Common/mpu_wrappers.c
+    toolchain: GCC
+    toolchainConfigMap:
+      GCC:
+        archExtensions: ""
+        cpuType: Cortex-M3
+        floatingPointHardware: default
+        options:
+          version: 5
+          afterBuildTasks: []
+          asm-compiler:
+            ASM_FLAGS: ""
+          beforeBuildTasks: []
+          c/cpp-compiler:
+            CXX_FLAGS: ""
+            C_FLAGS: ""
+            language-c: c11
+            language-cpp: c++11
+            one-elf-section-per-data: true
+            one-elf-section-per-function: true
+            optimization: level-debug
+            warnings: all-warnings
+          global:
+            $float-abi-type: softfp
+            misc-control: --specs=nosys.specs --specs=nano.specs
+            output-debug-info: enable
+          linker:
+            LD_FLAGS: ""
+            LIB_FLAGS: -lm
+            output-format: elf
+            remove-unused-input-sections: true
+        scatterFilePath: .\stm32f1x_64KB_flash.ld
+        storageLayout:
+          RAM:
+            - id: 1
+              isChecked: "1"
+              mem:
+                size: "0x2800"
+                startAddr: "0x20000000"
+              noInit: false
+              tag: IRAM
+          ROM:
+            - id: 1
+              isChecked: "1"
+              isStartup: true
+              mem:
+                size: "0x10000"
+                startAddr: "0x08000000"
+              tag: IROM
+        useCustomScatterFile: true
+    uploadConfigMap:
+      JLink:
+        baseAddr: "0x08000000"
+        bin: ""
+        cpuInfo:
+          cpuName: STM32F103C8
+          vendor: ST
+        otherCmds: ""
+        proType: 1
+        speed: 8000
+    uploader: JLink
